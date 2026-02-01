@@ -3,6 +3,7 @@ import DateTimeFilter from "@/components/DateTimeFilter";
 import Footer from "@/components/Footer";
 import StatsAndFilters from "@/components/StatsAndFilters";
 import TaskListPagination from "@/components/TaskListPagination";
+import TaskList from "@/components/TaskList";
 import Header from "@/components/Header";
 import React from "react";
 
@@ -28,6 +29,8 @@ const HomePage = () => {
 
           {/*Thong ke va bo loc*/}
           <StatsAndFilters />
+          {/*Danh sach nhiem vu*/}
+          <TaskList />
 
           {/*Phan trang va lap theo Date*/}
           <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
