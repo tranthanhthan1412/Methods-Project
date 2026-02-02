@@ -1,7 +1,6 @@
 import React from "react";
 import { Card } from "./ui/card";
 import { Circle } from "lucide-react";
-console.log("Rendering TaskEmptyState component");
 
 const TaskEmptyState = ({ filter }) => {
   return (

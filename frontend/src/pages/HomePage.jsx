@@ -5,9 +5,27 @@ import StatsAndFilters from "@/components/StatsAndFilters";
 import TaskListPagination from "@/components/TaskListPagination";
 import TaskList from "@/components/TaskList";
 import Header from "@/components/Header";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 const HomePage = () => {
+  const [taskBuffer, setTaskBuffer] = useState([]);
+  const fetchTasks = async () => {
+    try {
+      const res = await fetch("http://localhost:5001/api/tasks");
+      const data = await res.json();
+      setTaskBuffer(data.tasks);
+      console.log(data.tasks);
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+      toast.error("Không thể tải nhiệm vụ. Vui lòng thử lại sau.");
+    }
+  };
+
+  useEffect(() => {
+    fetchTasks();
+  }, []);
+
   return (
     <div className="min-h-screen w-full relative">
       {/* Radial Gradient Background from Top */}
@@ -29,6 +47,7 @@ const HomePage = () => {
 
           {/*Thong ke va bo loc*/}
           <StatsAndFilters />
+
           {/*Danh sach nhiem vu*/}
           <TaskList />
 
