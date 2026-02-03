@@ -7,15 +7,20 @@ import TaskList from "@/components/TaskList";
 import Header from "@/components/Header";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
+import axios from "axios";
 
 const HomePage = () => {
   const [taskBuffer, setTaskBuffer] = useState([]);
+  const [activeTaskCount, setActiveTaskCount] = useState(0);
+  const [completedTaskCount, setCompletedTaskCount] = useState(0);
+
   const fetchTasks = async () => {
     try {
-      const res = await fetch("http://localhost:5001/api/tasks");
-      const data = await res.json();
+      const res = await axios.get("http://localhost:5001/api/tasks");
+      const data = res.data[0]; // lấy phần tử đầu tiên trong mảng
       setTaskBuffer(data.tasks);
-      console.log(data.tasks);
+      setActiveTaskCount(data.activeCount[0]?.count || 0);
+      setCompletedTaskCount(data.completedCount[0]?.count || 0);
     } catch (error) {
       console.error("Error fetching tasks:", error);
       toast.error("Không thể tải nhiệm vụ. Vui lòng thử lại sau.");
@@ -46,18 +51,24 @@ const HomePage = () => {
           <AddTask />
 
           {/*Thong ke va bo loc*/}
-          <StatsAndFilters />
+          <StatsAndFilters
+            activeTasksCount={activeTaskCount}
+            completedTasksCount={completedTaskCount}
+          />
 
           {/*Danh sach nhiem vu*/}
-          <TaskList />
+          <TaskList filteredTasks={taskBuffer} />
 
           {/*Phan trang va lap theo Date*/}
           <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
             <TaskListPagination />
             <DateTimeFilter />
-            {/*Chan trang*/}
-            <Footer />
           </div>
+          {/*Chan trang*/}
+          <Footer
+            activeTaskCount={activeTaskCount}
+            completedTaskCount={completedTaskCount}
+          />
         </div>
       </div>
     </div>

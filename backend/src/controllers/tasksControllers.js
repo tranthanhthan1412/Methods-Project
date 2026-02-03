@@ -2,8 +2,20 @@ import Task from "../models/Task.js";
 
 export const getAllTasks = async (req, res) => {
   try {
-    const tasks = await Task.find().sort({ createdAt: -1 }); // lay tat ca task, sap xep giam dan theo createdAt
-    res.status(200).json(tasks);
+    const results = await Task.aggregate([
+      {
+        $facet: {
+          // phan chia ket qua thanh cac phan khac nhau
+          tasks: [{ $sort: { createdAt: -1 } }], //  sap xep giam dan theo createdAt
+          activeCount: [{ $match: { status: "active" } }, { $count: "count" }], // dem so luong task active
+          completedCount: [
+            { $match: { status: "completed" } },
+            { $count: "count" },
+          ], // dem so luong task completed
+        },
+      },
+    ]);
+    res.status(200).json(results); // res tra ve ket qua
   } catch (error) {
     console.log("Lỗi khi gọi getAllTasks:", error);
     res.status(500).json({ message: "Lỗi server" });
