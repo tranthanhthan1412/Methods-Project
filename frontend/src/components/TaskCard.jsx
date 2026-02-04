@@ -4,9 +4,23 @@ import { Button } from "./ui/button";
 import { Circle, Square, CheckCircle2, Calendar, Trash2 } from "lucide-react";
 import { Input } from "./ui/input";
 import { cn } from "@/lib/utils";
+import api from "@/lib/axios";
+import { toast } from "sonner";
 
-const TaskCard = ({ task, index }) => {
+const TaskCard = ({ task, index, handleTaskChanged }) => {
   let isEditing = false;
+
+  const deleteTask = async (taskId) => {
+    try {
+      await api.delete(`/tasks/${taskId}`);
+      toast.success("Nhiệm vụ đã được xóa.");
+      handleTaskChanged();
+    } catch (error) {
+      console.error("Lỗi khi xóa nhiệm vụ:", error);
+      toast.error("Đã xảy ra lỗi khi xóa nhiệm vụ.");
+    }
+  };
+
   return (
     <Card
       className={cn(
@@ -85,6 +99,7 @@ const TaskCard = ({ task, index }) => {
             variant="ghost"
             size="icon"
             className="flex-shrink-0 transition-colors size-8 text-muted-foreground hover:text-destructive"
+            onClick={() => deleteTask(task._id)}
           >
             <Trash2 className="size-4" />
           </Button>

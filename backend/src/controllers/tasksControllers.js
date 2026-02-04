@@ -15,7 +15,12 @@ export const getAllTasks = async (req, res) => {
         },
       },
     ]);
-    res.status(200).json(results); // res tra ve ket qua
+
+    const tasks = results[0].tasks;
+    const activeCount = results[0].activeCount[0]?.count || 0; // neu khong co thi tra ve 0
+    const completedCount = results[0].completedCount[0]?.count || 0; // neu khong co thi tra ve 0
+
+    res.status(200).json({ tasks, activeCount, completedCount }); // res tra ve ket qua
   } catch (error) {
     console.log("Lỗi khi gọi getAllTasks:", error);
     res.status(500).json({ message: "Lỗi server" });
