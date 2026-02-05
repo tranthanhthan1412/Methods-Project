@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import { Circle, Square, CheckCircle2, Calendar, Trash2 } from "lucide-react";
@@ -8,7 +8,8 @@ import api from "@/lib/axios";
 import { toast } from "sonner";
 
 const TaskCard = ({ task, index, handleTaskChanged }) => {
-  let isEditing = false;
+  const [isEditing, setIsEditing] = useState(false);
+  const [updatedTaskTitle, setUpdatedTaskTitle] = useState(task.title || "");
 
   const deleteTask = async (taskId) => {
     try {
@@ -18,6 +19,62 @@ const TaskCard = ({ task, index, handleTaskChanged }) => {
     } catch (error) {
       console.error("Lỗi khi xóa nhiệm vụ:", error);
       toast.error("Đã xảy ra lỗi khi xóa nhiệm vụ.");
+    }
+  };
+
+  const updateTask = async () => {
+    // Cancel nếu không thay đổi
+    if (updatedTaskTitle.trim() === task.title) {
+      setIsEditing(false);
+      return;
+    }
+
+    if (!updatedTaskTitle.trim()) {
+      toast.error("Nội dung không được để trống");
+      return;
+    }
+
+    try {
+      setIsEditing(false);
+      await api.put(`/tasks/${task._id}`, {
+        title: updatedTaskTitle,
+      });
+
+      toast.success(`Nhiệm vụ đã được cập nhật thành "${updatedTaskTitle}".`);
+      handleTaskChanged();
+    } catch (error) {
+      console.error("Lỗi khi cập nhật nhiệm vụ:", error);
+      toast.error("Đã xảy ra lỗi khi cập nhật nhiệm vụ.");
+    }
+  };
+
+  const toggleTaskCompleteButton = async () => {
+    try {
+      if (task.status === "active") {
+        await api.put(`/tasks/${task._id}`, {
+          status: "completed",
+          completedAt: new Date().toISOString(),
+        });
+        toast.success(`Nhiệm vụ "${task.title}" đã hoàn thành.`);
+      } else {
+        await api.put(`/tasks/${task._id}`, {
+          status: "active",
+          completedAt: null,
+        });
+        toast.success(
+          `Nhiệm vụ "${task.title}" đã được đặt lại thành chưa hoàn thành .`,
+        );
+      }
+      handleTaskChanged();
+    } catch (error) {
+      console.error("Lỗi khi cập nhật trạng thái nhiệm vụ:", error);
+      toast.error("Đã xảy ra lỗi khi cập nhật trạng thái nhiệm vụ.");
+    }
+  };
+
+  const handleKeyPress = (event) => {
+    if (event.key === "Enter") {
+      updateTask();
     }
   };
 
@@ -40,6 +97,7 @@ const TaskCard = ({ task, index, handleTaskChanged }) => {
               ? "text-success hover:text-success/80"
               : "text-muted-foreground hover:text-primary",
           )}
+          onClick={toggleTaskCompleteButton}
         >
           {task.status === "completed" ? (
             <CheckCircle2 className="size-5" />
@@ -54,7 +112,11 @@ const TaskCard = ({ task, index, handleTaskChanged }) => {
               placeholder="Cần phải làm gì?"
               className="flex-1 h-12 text-base border-border/50 focus:border-primary focus:ring-primary/20"
               type="text"
-            ></Input>
+              value={updatedTaskTitle}
+              onChange={(e) => setUpdatedTaskTitle(e.target.value)}
+              onKeyPress={handleKeyPress}
+              onBlur={updateTask}
+            />
           ) : (
             <p
               className={cn(
@@ -91,6 +153,10 @@ const TaskCard = ({ task, index, handleTaskChanged }) => {
             variant="ghost"
             size="icon"
             className="flex-shrink-0 transition-colors size-8 text-muted-foreground hover:text-info"
+            onClick={() => {
+              setIsEditing(true);
+              setUpdatedTaskTitle(task.title || "");
+            }}
           >
             <Square className="size-4" />
           </Button>

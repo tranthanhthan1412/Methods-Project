@@ -21,7 +21,7 @@ const HomePage = () => {
       case "active":
         return task.status === "active";
       case "completed":
-        return task.status === "complete";
+        return task.status === "completed";
       default:
         return true;
     }
@@ -31,13 +31,16 @@ const HomePage = () => {
     try {
       const res = await api.get("/tasks");
 
-      console.log("API DATA:", res.data);
-
       const data = Array.isArray(res.data) ? res.data[0] : res.data;
+      const tasks = data?.tasks || [];
 
-      setTaskBuffer(data?.tasks || []);
-      setActiveTaskCount(data?.activeCount?.[0]?.count || 0);
-      setCompletedTaskCount(data?.completedCount?.[0]?.count || 0);
+      setTaskBuffer(tasks);
+
+      const active = tasks.filter((t) => t.status === "active").length;
+      const completed = tasks.filter((t) => t.status === "completed").length;
+
+      setActiveTaskCount(active);
+      setCompletedTaskCount(completed);
     } catch (error) {
       console.error("Error fetching tasks:", error);
       toast.error("Không thể tải nhiệm vụ. Vui lòng thử lại sau.");
