@@ -28,7 +28,7 @@ if (process.env.NODE_ENV === "production") {
 }
 
 connectDB().then(() => {
-  app.listen(PORT, () => {
-    console.log(" Server running on port: " + PORT);
+  app.listen(PORT, "0.0.0.0", () => {
+    console.log("Server running on port: " + PORT);
   });
-}); // ket noi csdl
+});
