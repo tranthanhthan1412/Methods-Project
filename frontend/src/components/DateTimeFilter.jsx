@@ -10,18 +10,17 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { options } from "@/lib/data";
 
 const DateTimeFilter = ({ dateQuery, setDateQuery }) => {
   const [open, setOpen] = React.useState(false);
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover
+      open={open}
+      onOpenChange={setOpen}
+    >
       <PopoverTrigger asChild>
         <Button
           size="lg"
@@ -53,7 +52,7 @@ const DateTimeFilter = ({ dateQuery, setDateQuery }) => {
                   <Check
                     className={cn(
                       "ml-auto",
-                      dateQuery === option.value ? "opacity-100" : "opacity-0",
+                      dateQuery === option.value ? "opacity-100" : "opacity-0"
                     )}
                   />
                 </CommandItem>
